@@ -35,7 +35,6 @@ export function Layout() {
               <NavLink
                 key={item.to}
                 to={item.to}
-                end={item.to === '/'}
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                     isActive ? 'bg-accent text-white' : 'text-ink/70 hover:bg-canvas hover:text-ink'
