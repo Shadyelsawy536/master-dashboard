@@ -154,7 +154,7 @@ export function RestaurantDetails() {
     loadDomains();
   }
 
-  async function runSubscriptionAction(fn: () => Promise<{ error: { message: string } | null }>) {
+  async function runSubscriptionAction(   fn: () => PromiseLike<{ error: { message: string } | null }> ) {
     setSubActionBusy(true);
     setSubMessage(null);
     const { error: rpcError } = await fn();
