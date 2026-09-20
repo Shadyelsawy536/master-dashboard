@@ -37,8 +37,6 @@ function currency(n: number) {
   return new Intl.NumberFormat('en-EG', { maximumFractionDigits: 0 }).format(n) + ' EGP';
 }
 
-// Same derivation Restaurants.tsx uses -- kept here too rather than a new
-// RPC, since it's cheap to compute from data already being fetched anyway.
 function issuesFor(r: RestaurantRow): string[] {
   const issues: string[] = [];
   if (!r.subscription_status) issues.push('No subscription');
@@ -55,16 +53,40 @@ export function Overview() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [health, setHealth] = useState<HealthData | null>(null);
   const [logs, setLogs] = useState<LogRow[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function loadOverview() {
+    setError(null);
+
+    const [
+      { data: restaurantData, error: restaurantError },
+      { data: analyticsData, error: analyticsError },
+      { data: healthData, error: healthError },
+      { data: logsData, error: logsError },
+    ] = await Promise.all([
+      supabase.rpc('get_platform_restaurants_overview'),
+      supabase.rpc('get_platform_analytics'),
+      supabase.rpc('get_system_health'),
+      supabase.rpc('get_audit_logs', { p_restaurant_id: null, p_action: null, p_limit: 8 }),
+    ]);
+
+    const errors = [restaurantError, analyticsError, healthError, logsError].filter(Boolean);
+    if (errors.length > 0) {
+      setError(errors.map((e) => e?.message).filter(Boolean).join(' | '));
+    }
+
+    setRestaurants((restaurantData as RestaurantRow[]) ?? []);
+    setAnalytics((analyticsData as AnalyticsData) ?? null);
+    setHealth((healthData as HealthData) ?? null);
+    setLogs((logsData as LogRow[]) ?? []);
+  }
 
   useEffect(() => {
-    supabase.rpc('get_platform_restaurants_overview').then(({ data }) => setRestaurants((data as RestaurantRow[]) ?? []));
-    supabase.rpc('get_platform_analytics').then(({ data }) => setAnalytics(data as AnalyticsData));
-    supabase.rpc('get_system_health').then(({ data }) => setHealth(data as HealthData));
-    supabase.rpc('get_audit_logs', { p_restaurant_id: null, p_action: null, p_limit: 8 }).then(({ data }) => setLogs(data as LogRow[]));
+    loadOverview();
   }, []);
 
   const today = new Date().toISOString().slice(0, 10);
-  const todayRow = analytics?.orders_last_30_days.find((d) => d.day === today);
+  const todayRow = analytics?.orders_last_30_days?.find((d) => d.day === today);
   const attention = restaurants?.map((r) => ({ r, issues: issuesFor(r) })).filter((x) => x.issues.length > 0).slice(0, 5);
 
   const jobIsHealthy = (j: HealthData['scheduled_jobs'][number]) =>
@@ -72,8 +94,24 @@ export function Overview() {
 
   return (
     <div className="p-8">
-      <h1 className="font-display text-2xl font-semibold text-ink">Overview</h1>
-      <p className="mt-1 text-sm text-ink/60">The whole platform, at a glance.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="font-display text-2xl font-semibold text-ink">Overview</h1>
+          <p className="mt-1 text-sm text-ink/60">The whole platform, at a glance.</p>
+        </div>
+        <button
+          onClick={loadOverview}
+          className="rounded-lg border border-line px-3 py-2 text-xs font-semibold text-ink/70 hover:border-accent hover:text-accent"
+        >
+          Refresh
+        </button>
+      </div>
+
+      {error && (
+        <div className="mt-4 rounded-lg bg-danger/5 px-3 py-2 text-sm text-danger">
+          {error}
+        </div>
+      )}
 
       <div className="mt-6 grid grid-cols-4 gap-4">
         <StatCard
@@ -87,7 +125,6 @@ export function Overview() {
       </div>
 
       <div className="mt-6 grid grid-cols-3 gap-6">
-        {/* Needs attention */}
         <div className="col-span-2 rounded-2xl border border-line bg-surface p-5">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-ink">Needs Attention</h2>
@@ -95,13 +132,13 @@ export function Overview() {
               View all restaurants
             </Link>
           </div>
-          {!attention ? (
+          {!restaurants ? (
             <p className="mt-3 text-sm text-ink/40">Loading…</p>
-          ) : attention.length === 0 ? (
+          ) : attention?.length === 0 ? (
             <p className="mt-3 text-sm text-ink/40">Nothing needs attention right now.</p>
           ) : (
             <ul className="mt-3 space-y-2">
-              {attention.map(({ r, issues }) => (
+              {attention?.map(({ r, issues }) => (
                 <li key={r.id} className="flex items-center justify-between rounded-lg border border-line px-3 py-2 text-sm">
                   <Link to={`/restaurants/${r.id}`} className="font-medium text-ink hover:text-accent">
                     {r.name}
@@ -117,7 +154,6 @@ export function Overview() {
           )}
         </div>
 
-        {/* System status strip */}
         <div className="rounded-2xl border border-line bg-surface p-5">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-ink">System Status</h2>
@@ -144,7 +180,6 @@ export function Overview() {
         </div>
       </div>
 
-      {/* Recent activity */}
       <div className="mt-6 rounded-2xl border border-line bg-surface p-5">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-ink">Recent Activity</h2>
