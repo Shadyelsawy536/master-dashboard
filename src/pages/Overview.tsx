@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { Badge, restaurantStatusTone } from '../components/Badge';
+import { Badge } from '../components/Badge';
 
 interface RestaurantRow {
   id: string;
