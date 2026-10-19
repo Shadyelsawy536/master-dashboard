@@ -29,6 +29,9 @@ jobs:
       - name: Install dependencies and refresh lockfile
         run: npm install
 
+      - name: Apply non-breaking npm security fixes
+        run: npm audit fix
+
       - name: Build
         env:
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
