@@ -30,8 +30,8 @@ That login-screen work happens in cafe-admin-dashboard, not here.
   via `get_platform_restaurants_overview()`, no placeholder numbers.
 - **Create Restaurant**: one form creates the restaurant + settings +
   branding + a 14-day trial subscription + an "Owner" role with all 9
-  permissions, atomically (`create_restaurant_full` SQL function), then the
-  `create-restaurant` Edge Function invites the admin's email via Supabase
+  permissions, atomically (`create_restaurant_full` SQL function), then
+  the `create-restaurant` Edge Function invites the admin's email via Supabase
   Auth and links them as Owner. If the invite step fails, the restaurant is
   still kept (not silently lost) and the error says exactly what to retry.
 - **Restaurant Details** (click any row): subscription info, connected
@@ -97,7 +97,6 @@ That login-screen work happens in cafe-admin-dashboard, not here.
   permissions had before that got wired up to actually restrict pages.
   Scoping each platform role to only what it needs is a natural follow-up,
   not done in this pass.
-
 - **Real bugs found and fixed after this was all "done" once already** —
   worth reading if anything here seems to contradict earlier claims in this
   file's history:
@@ -113,8 +112,7 @@ That login-screen work happens in cafe-admin-dashboard, not here.
     bug above. Fixed by making those RPCs `SECURITY DEFINER` (each already
     does its own `is_platform_admin()` check first, so this doesn't loosen
     anything).
-  - Changing `restaurants.status` never actually stopped anything —
-    `is_restaurant_staff()` only checked membership, not whether the
+  - Changing `restaurants.status` never actually stopped anything — `is_restaurant_staff()` only checked membership, not whether the
     restaurant was allowed to operate. Suspending a tenant was cosmetic.
     Fixed with a new `private.is_restaurant_active()` check wired into
     `place_order` (blocks new orders at a suspended/inactive restaurant)
@@ -160,6 +158,14 @@ That login-screen work happens in cafe-admin-dashboard, not here.
 (see `.github/workflows/deploy.yml` and `vite.config.ts`'s mode-aware
 `base`). `App.tsx` resolves the router's `basename` from the current path
 so the same build works both there and at the domain root in local dev.
+
+**Error monitoring (Sentry)**: the frontend uses `@sentry/react` through
+`src/lib/observability.ts`. Add the project's Sentry DSN as the GitHub
+Actions repository secret `VITE_SENTRY_DSN`; the Pages deployment workflow
+passes it into the Vite build. The DSN is embedded in the public frontend
+bundle by design, so never put Sentry auth tokens or other private credentials
+in this variable. Error events are filtered to avoid sending user-identifying
+data by default.
 
 **Not built yet:**
 - Payment Provider Monitoring — parked for now (see the payment
