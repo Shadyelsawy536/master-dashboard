@@ -12,6 +12,7 @@ import { Analytics } from './pages/Analytics';
 import { PlatformUsers } from './pages/PlatformUsers';
 import { AuditLogs } from './pages/AuditLogs';
 import { SystemHealth } from './pages/SystemHealth';
+import { Monitoring } from './pages/Monitoring';
 
 function ProtectedShell() {
   const { user, platformRoleName, loading } = useAuth();
@@ -53,6 +54,7 @@ export default function App() {
             <Route path="/platform-users" element={<PlatformUsers />} />
             <Route path="/audit-logs" element={<AuditLogs />} />
             <Route path="/system-health" element={<SystemHealth />} />
+            <Route path="/monitoring" element={<Monitoring />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
