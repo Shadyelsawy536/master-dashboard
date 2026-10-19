@@ -29,6 +29,7 @@ function redact(value: string): string {
     .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, '[redacted-email]')
     .replace(/\b(?:\+?\d[\d\s().-]{7,}\d)\b/g, '[redacted-number]')
     .replace(/(Bearer\s+)[A-Za-z0-9._~+/-]+=*/gi, '$1[redacted]')
+    .replace(/\b(password|passwd|secret|token|authorization|api[_-]?key|client[_-]?secret|merchant[_-]?secret)\b\s*[:=]\s*["']?[^\s,"'}]+/gi, '$1=[redacted]')
     .replace(/\b(sk_live_|sk_test_|pk_live_|pk_test_)[A-Za-z0-9_-]+/gi, '[redacted-key]');
 }
 
