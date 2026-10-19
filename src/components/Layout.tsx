@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { to: '/platform-users', label: 'Platform Users', icon: '◐', enabled: true },
   { to: '/audit-logs', label: 'Audit Logs', icon: '☰', enabled: true },
   { to: '/system-health', label: 'System Health', icon: '♥', enabled: true },
+  { to: '/monitoring', label: 'Monitoring', icon: '⚠', enabled: true },
 ] as const;
 
 export function Layout() {
