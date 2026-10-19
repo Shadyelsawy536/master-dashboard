@@ -75,7 +75,7 @@ export function Monitoring() {
       <section className="overflow-hidden rounded-xl border border-line bg-surface">
         <div className="border-b border-line px-4 py-3">
           <h2 className="font-semibold text-ink">Recent local events</h2>
-          <p className="mt-1 text-xs text-ink/50">Diagnostic messages are redacted before display. No payment payloads or credentials are collected.</p>
+          <p className="mt-1 text-xs text-ink/50">Only exception messages and diagnostic metadata are retained locally; common email, phone-like, bearer-token, and secret key-value patterns are redacted.</p>
         </div>
         {events.length === 0 ? (
           <div className="p-8 text-center text-sm text-ink/50">No events captured in this browser session.</div>
