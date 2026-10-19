@@ -30,7 +30,7 @@ jobs:
         run: npm install
 
       - name: Apply non-breaking npm security fixes
-        run: npm audit fix
+        run: npm audit fix || echo 'Some advisories require major-version upgrades; continuing to the build without --force.'
 
       - name: Build
         env:
