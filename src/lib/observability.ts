@@ -113,7 +113,8 @@ export function initializeObservability(): void {
   if (initialized || typeof window === 'undefined') return;
   initialized = true;
 
-  const dsn = import.meta.env.VITE_SENTRY_DSN?.trim();
+  const runtimeEnv = (import.meta as ImportMeta & { env?: { VITE_SENTRY_DSN?: string; DEV?: boolean } }).env;
+  const dsn = runtimeEnv?.VITE_SENTRY_DSN?.trim();
   if (dsn) {
     Sentry.init({
       dsn,
@@ -127,7 +128,7 @@ export function initializeObservability(): void {
         }),
       ],
       sendDefaultPii: false,
-      tracesSampleRate: import.meta.env.DEV ? 1.0 : 0.1,
+      tracesSampleRate: runtimeEnv?.DEV ? 1.0 : 0.1,
       // Avoid recording ordinary sessions; keep replay available for errors.
       replaysSessionSampleRate: 0,
       replaysOnErrorSampleRate: 1.0,
