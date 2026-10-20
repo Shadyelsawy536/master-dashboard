@@ -9,6 +9,7 @@ import { CreateRestaurant } from './pages/CreateRestaurant';
 import { Subscriptions } from './pages/Subscriptions';
 import { FeatureFlags } from './pages/FeatureFlags';
 import { Analytics } from './pages/Analytics';
+import { Customers } from './pages/Customers';
 import { PlatformUsers } from './pages/PlatformUsers';
 import { AuditLogs } from './pages/AuditLogs';
 import { SystemHealth } from './pages/SystemHealth';
@@ -51,6 +52,7 @@ export default function App() {
             <Route path="/subscriptions" element={<Subscriptions />} />
             <Route path="/feature-flags" element={<FeatureFlags />} />
             <Route path="/analytics" element={<Analytics />} />
+            <Route path="/customers" element={<Customers />} />
             <Route path="/platform-users" element={<PlatformUsers />} />
             <Route path="/audit-logs" element={<AuditLogs />} />
             <Route path="/system-health" element={<SystemHealth />} />
