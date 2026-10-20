@@ -1,0 +1,10 @@
+Options -MultiViews
+RewriteEngine On
+
+# Serve existing files and directories normally.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# React Router SPA fallback for direct links such as /reset-password.
+RewriteRule ^ index.html [L]
