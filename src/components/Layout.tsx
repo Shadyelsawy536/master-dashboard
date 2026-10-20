@@ -1,13 +1,11 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-// Every item here maps to a section of the Master Dashboard spec.
-// Only "Restaurants" is wired to a real page so far -- the rest are
-// listed but disabled, so the nav shows the full intended shape of the
-// dashboard from day one instead of silently growing new items later.
+// Keep navigation aligned with the sections that are actually available.
 const NAV_ITEMS = [
   { to: '/', label: 'Overview', icon: '◧', enabled: true },
   { to: '/restaurants', label: 'Restaurants', icon: '▦', enabled: true },
+  { to: '/customers', label: 'Customers', icon: '♙', enabled: true },
   { to: '/subscriptions', label: 'Subscriptions', icon: '◆', enabled: true },
   { to: '/feature-flags', label: 'Feature Flags', icon: '⚑', enabled: true },
   { to: '/analytics', label: 'Analytics', icon: '◫', enabled: true },
@@ -30,7 +28,7 @@ export function Layout() {
             Master
           </span>
         </div>
-        <nav className="flex-1 space-y-1 px-3 py-4">
+        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
           {NAV_ITEMS.map((item) =>
             item.enabled ? (
               <NavLink
@@ -56,7 +54,7 @@ export function Layout() {
                 {item.label}
                 <span className="ml-auto text-[10px] uppercase tracking-wide text-ink/25">soon</span>
               </div>
-            )
+            ),
           )}
         </nav>
         <div className="border-t border-line px-4 py-4">
