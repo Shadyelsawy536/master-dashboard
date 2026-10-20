@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Layout } from './components/Layout';
 import { Login } from './pages/Login';
+import { ResetPassword } from './pages/ResetPassword';
 import { Overview } from './pages/Overview';
 import { Restaurants } from './pages/Restaurants';
 import { RestaurantDetails } from './pages/RestaurantDetails';
@@ -44,6 +45,7 @@ export default function App() {
       <BrowserRouter basename={routerBasename}>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route element={<ProtectedShell />}>
             <Route path="/" element={<Overview />} />
             <Route path="/restaurants" element={<Restaurants />} />
