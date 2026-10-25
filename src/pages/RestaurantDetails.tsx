@@ -56,6 +56,7 @@ export function RestaurantDetails() {
   const { id } = useParams<{ id: string }>();
   const [details, setDetails] = useState<Details | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [restaurantIdMessage, setRestaurantIdMessage] = useState<string | null>(null);
   const [changingStatus, setChangingStatus] = useState(false);
   const [reason, setReason] = useState('');
 
@@ -96,6 +97,16 @@ export function RestaurantDetails() {
     setDetails(parsed);
     setLoginIdInput(parsed.restaurant.login_id ?? '');
   }, [id]);
+
+  async function copyRestaurantId() {
+    if (!details?.restaurant.id) return;
+    try {
+      await navigator.clipboard.writeText(details.restaurant.id);
+      setRestaurantIdMessage('Restaurant ID copied.');
+    } catch {
+      setRestaurantIdMessage('Copy failed. Select and copy the ID manually.');
+    }
+  }
 
   async function saveLoginId() {
     if (!id || !/^[0-9]{6}$/.test(loginIdInput)) {
@@ -262,6 +273,20 @@ export function RestaurantDetails() {
           <p className="mt-1 text-sm text-ink/50">
             /{restaurant.slug} · created {new Date(restaurant.created_at).toLocaleDateString()}
           </p>
+          <div className="mt-3 max-w-xl rounded-xl border border-line bg-surface px-3 py-2">
+            <p className="text-[10px] font-medium uppercase tracking-wide text-ink/40">Restaurant ID</p>
+            <div className="mt-1 flex flex-wrap items-center gap-2">
+              <code className="break-all font-mono text-sm text-ink">{restaurant.id}</code>
+              <button
+                type="button"
+                onClick={copyRestaurantId}
+                className="rounded-lg border border-line px-2 py-1 text-xs font-semibold text-ink/70 hover:border-accent hover:text-accent"
+              >
+                Copy ID
+              </button>
+            </div>
+            {restaurantIdMessage && <p className="mt-1 text-xs text-ink/50">{restaurantIdMessage}</p>}
+          </div>
         </div>
         <div className="rounded-xl border border-line bg-surface p-3 text-right">
           <p className="text-[10px] font-medium uppercase tracking-wide text-ink/40">Login ID</p>
