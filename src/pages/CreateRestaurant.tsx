@@ -34,6 +34,7 @@ export function CreateRestaurant() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
+  const [createdRestaurantId, setCreatedRestaurantId] = useState<string | null>(null);
 
   useEffect(() => {
     supabase
@@ -70,6 +71,7 @@ export function CreateRestaurant() {
     setSubmitting(true);
     setError(null);
     setWarning(null);
+    setCreatedRestaurantId(null);
 
     const { data, error: invokeError } = await supabase.functions.invoke('create-restaurant', {
       body: {
@@ -112,6 +114,7 @@ export function CreateRestaurant() {
 
     // 207-style partial success: restaurant exists, admin invite/link failed.
     if (data?.restaurantId) {
+      setCreatedRestaurantId(String(data.restaurantId));
       setWarning(data.error ?? 'Restaurant created, but something after that failed.');
       return;
     }
@@ -235,7 +238,31 @@ export function CreateRestaurant() {
         </p>
 
         {error && <p className="mt-4 rounded-lg bg-danger/5 px-3 py-2 text-sm text-danger">{error}</p>}
-        {warning && <p className="mt-4 rounded-lg bg-warning/10 px-3 py-2 text-sm text-warning">{warning}</p>}
+        {warning && (
+          <div className="mt-4 rounded-lg bg-warning/10 px-3 py-3 text-sm text-warning">
+            <p>{warning}</p>
+            {createdRestaurantId && (
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <span className="font-medium">Restaurant ID:</span>
+                <code className="break-all rounded bg-surface px-2 py-1 font-mono text-xs text-ink">{createdRestaurantId}</code>
+                <button
+                  type="button"
+                  onClick={() => navigator.clipboard.writeText(createdRestaurantId)}
+                  className="rounded-lg border border-line px-2 py-1 text-xs font-semibold text-ink/70 hover:border-accent hover:text-accent"
+                >
+                  Copy ID
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate(`/restaurants/${createdRestaurantId}`)}
+                  className="rounded-lg border border-line px-2 py-1 text-xs font-semibold text-ink/70 hover:border-accent hover:text-accent"
+                >
+                  Open Restaurant
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         <button
           type="submit"
